@@ -1,5 +1,6 @@
 set(REDIS_MOD ../src/redis_mod.f90)
 
+add_definitions(-cpp)
 
 foreach(exe test_send test_connect test_redis_push)
 

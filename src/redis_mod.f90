@@ -2,6 +2,13 @@ module redis_mod
   use iso_c_binding
   implicit none
 
+! Test for a little-endian machine
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  character(len=1), parameter :: endian="<"
+#else
+  character(len=1), parameter :: endian=">"
+#endif
+
   interface
      subroutine redis_test_set(c) bind(c, name='redisTestSet')
        use iso_c_binding
@@ -32,6 +39,10 @@ module redis_mod
      end subroutine c_redis_push
   end interface
 
+  interface redis_push
+    module procedure redis_push_f4, redis_push_f8, redis_push_i2, redis_push_i4
+  end interface
+
 contains
 
   subroutine array_to_redis(f)
@@ -60,22 +71,83 @@ contains
 
   end subroutine stream_data
 
-  subroutine redis_push(c, key, arr, dtype, dims)
-    use iso_c_binding
-    type(c_ptr) :: c
-    ! This next declaration is hacky way to make a fortran function polymorphic
-    type(*), target :: arr(*)
-    character(len=*) :: dtype, key
-    integer(c_int) :: dims(:)
 
-    character(len=128) :: dtype_c
+  subroutine redis_push_f4(c, key, arr)
+    use iso_c_binding
+    type(c_ptr), intent(in) :: c
+    ! This next declaration is hacky way to make a fortran function polymorphic
+    real*4, dimension(:), target, intent(in) :: arr
+    character(len=*), intent(in) :: key
+
+    character(len=4) :: dtype_c
     character(len=128) :: key_c
 
+    ! array type
+    dtype_c = endian//"f4"//CHAR(0)
+
     ! strings in C need to be null-terminated
-    dtype_c = (trim(dtype)//CHAR(0))
     key_c = (trim(key)//CHAR(0))
 
-    call c_redis_push(c, key_c, c_loc(arr), dtype_c, dims, size(dims,1))
-  end subroutine redis_push
+    call c_redis_push(c, key_c, c_loc(arr), dtype_c, shape(arr), rank(arr))
+  end subroutine redis_push_f4
+
+
+  subroutine redis_push_f8(c, key, arr)
+    use iso_c_binding
+    type(c_ptr), intent(in) :: c
+    ! This next declaration is hacky way to make a fortran function polymorphic
+    real*8, dimension(:), target, intent(in) :: arr
+    character(len=*), intent(in) :: key
+
+    character(len=4) :: dtype_c
+    character(len=128) :: key_c
+
+    ! array type
+    dtype_c = endian//"f8"//CHAR(0)
+
+    ! strings in C need to be null-terminated
+    key_c = (trim(key)//CHAR(0))
+
+    call c_redis_push(c, key_c, c_loc(arr), dtype_c, shape(arr), rank(arr))
+end subroutine redis_push_f8
+
+subroutine redis_push_i2(c, key, arr)
+  use iso_c_binding
+  type(c_ptr), intent(in) :: c
+  ! This next declaration is hacky way to make a fortran function polymorphic
+  integer*2, dimension(:), target, intent(in) :: arr
+  character(len=*), intent(in) :: key
+
+  character(len=4) :: dtype_c
+  character(len=128) :: key_c
+
+  ! array type
+  dtype_c = endian//"i2"//CHAR(0)
+
+  ! strings in C need to be null-terminated
+  key_c = (trim(key)//CHAR(0))
+
+  call c_redis_push(c, key_c, c_loc(arr), dtype_c, shape(arr), rank(arr))
+end subroutine redis_push_i2
+
+
+subroutine redis_push_i4(c, key, arr)
+  use iso_c_binding
+  type(c_ptr), intent(in) :: c
+  ! This next declaration is hacky way to make a fortran function polymorphic
+  integer*4, dimension(:), target, intent(in) :: arr
+  character(len=*), intent(in) :: key
+
+  character(len=4) :: dtype_c
+  character(len=128) :: key_c
+
+  ! array type
+  dtype_c = endian//"i4"//CHAR(0)
+
+  ! strings in C need to be null-terminated
+  key_c = (trim(key)//CHAR(0))
+
+  call c_redis_push(c, key_c, c_loc(arr), dtype_c, shape(arr), rank(arr))
+end subroutine redis_push_i4
 
 end module redis_mod
