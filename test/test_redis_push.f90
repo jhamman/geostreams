@@ -26,11 +26,13 @@ PROGRAM name
 
   ndims = 2
 
+  ! top level API
   CALL redis_push(redis, 'A-f4', f4)
   CALL redis_push(redis, 'A-f8', f8)
   CALL redis_push(redis, 'A-i2', i2)
   CALL redis_push(redis, 'A-i4', i4)
 
+  ! Lower level API
   CALL redis_push_explict(redis, 'A-f4', f4, '<f4', shape(f4))
   CALL redis_push_explict(redis, 'A-f8', f8, '<f4', shape(f8))
   CALL redis_push_explict(redis, 'A-i2', i2, '<f4', shape(i2))
