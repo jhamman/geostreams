@@ -16,5 +16,3 @@ include_directories(${hiredis_INCLUDE_DIR})
 
 add_subdirectory (src)
 add_subdirectory (test)
-
-add_definitions(-cpp)
