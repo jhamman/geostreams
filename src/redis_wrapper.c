@@ -12,10 +12,9 @@ redisContext *globalconn;
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-void
-getenv_d(char *str,
-         char *key,
-         char *def)
+void getenv_d(char *str,
+              char *key,
+              char *def)
 {
     char *val;
     val = getenv(key);
@@ -29,8 +28,7 @@ getenv_d(char *str,
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-redisContext *
-setupConnection()
+redisContext *setupConnection()
 {
     redisContext *c;
     redisReply   *reply;
@@ -75,10 +73,9 @@ setupConnection()
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-void
-publish_to_redis_(int*f,
-                  int*nptr,
-                  int*mptr)
+void publish_to_redis_(int*f,
+                       int*nptr,
+                       int*mptr)
 {
     redisReply *reply;
     char       *buf;
@@ -117,10 +114,9 @@ publish_to_redis_(int*f,
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-void
-make_dimspec(char*dimstr,
-             int *dims,
-             int  ndims)
+void make_dimspec(char*dimstr,
+                  int *dims,
+                  int  ndims)
 {
     int  i, offset;
     char k[64];
@@ -138,10 +134,9 @@ make_dimspec(char*dimstr,
     }
 }
 
-size_t
-prod(int  init,
-     int *arr,
-     int  n)
+size_t prod(int  init,
+            int *arr,
+            int  n)
 {
     int    i;
     size_t len = (size_t) init;
@@ -155,10 +150,9 @@ prod(int  init,
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-void
-iarray_to_redis(int *f,
-                int *dims,
-                int *ndims_ptr)
+void iarray_to_redis(int *f,
+                     int *dims,
+                     int *ndims_ptr)
 {
     redisReply *reply;
     char       *buf;
@@ -201,13 +195,12 @@ iarray_to_redis(int *f,
 
    @note     use const ints for dtypes because enum isn't interopable with fortran
  *****************************************************************************/
-void
-Redis_push(redisContext *c,
-           char         *KEY,
-           void         *f,
-           const char   *dtype,
-           int          *dims,
-           int           ndims)
+void Redis_push(redisContext *c,
+                char         *KEY,
+                void         *f,
+                const char   *dtype,
+                int          *dims,
+                int           ndims)
 {
     // dtype is in form <i4, <f8, <f4, etc
 
@@ -234,8 +227,7 @@ Redis_push(redisContext *c,
 /******************************************************************************
  * @brief    TODO
  *****************************************************************************/
-void
-redisTestSet(redisContext *c)
+void redisTestSet(redisContext *c)
 {
     printf("Attempting to set A to 1\n");
     redisCommand(c, "SET A 1");
