@@ -70,46 +70,6 @@ redisContext *setupConnection()
     return c;
 }
 
-/******************************************************************************
- * @brief    TODO
- *****************************************************************************/
-void publish_to_redis_(int*f,
-                       int*nptr,
-                       int*mptr)
-{
-    redisReply *reply;
-    char       *buf;
-    static int  first_run = 1;
-
-    size_t      n, m;
-    n = *nptr;
-    m = *mptr;
-
-    // connect
-    if (first_run == 1) {
-        printf("Setting up redis connection\n");
-        globalconn = setupConnection();
-        first_run = 0;
-    }
-
-
-    // push data onto redis list
-    buf = (void *) f;
-    size_t len;
-    len = sizeof(f[0]) * m * n;
-
-    reply = redisCommand(globalconn, "LPUSH A %b", buf, len);
-
-    // trim data
-    reply = redisCommand(globalconn, "LTRIM A 0 %d", num_buffer - 1);
-
-    // publish
-    reply = redisCommand(globalconn, "PUBLISH A %b", buf, len);
-
-    // printf("%s\n",  reply->str);
-    freeReplyObject(reply);
-    // redisFree(globalconn);
-}
 
 /******************************************************************************
  * @brief    TODO
@@ -147,48 +107,6 @@ size_t prod(int  init,
     return len;
 }
 
-/******************************************************************************
- * @brief    TODO
- *****************************************************************************/
-void iarray_to_redis(int *f,
-                     int *dims,
-                     int *ndims_ptr)
-{
-    redisReply *reply;
-    char       *buf;
-    int         ndims = *ndims_ptr;
-    int         i;
-    static int  first_run = 1;
-    size_t      len;
-
-    // compute length of the array
-    buf = (void *) f;
-    len = sizeof(f[0]);
-    for (i = 0; i < ndims; i++) {
-        len *= (size_t) dims[i];
-    }
-
-    // form dim string
-    char dimspec[100];
-    make_dimspec(dimspec, dims, ndims);
-
-    if (first_run == 1) {
-        printf("Setting up redis connection\n");
-        globalconn = setupConnection();
-        first_run = 0;
-    }
-
-    // write message
-    reply = redisCommand(globalconn, "HMSET A:1  messages %b dimensions %s",
-                         buf, len, dimspec);
-    reply = redisCommand(globalconn, "HMSET B:1  messages %b dimensions %s",
-                         buf, len, dimspec);
-    printf("wrapper-c: %s\n", reply->str);
-
-    // trim data
-    freeReplyObject(reply);
-    /* redisFree(c); */
-}
 
 /******************************************************************************
  * @brief    TODO

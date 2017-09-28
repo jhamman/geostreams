@@ -11,12 +11,6 @@ MODULE redis_mod
        TYPE(c_ptr), VALUE :: c
      END SUBROUTINE redis_test_set
 
-     SUBROUTINE iarray_to_redis(f, dims, ndims) bind ( c )
-       USE iso_c_binding
-       ! Arguments
-       INTEGER(c_int) f(*), dims(*), ndims
-     END SUBROUTINE iarray_to_redis
-
      TYPE(c_ptr) FUNCTION setup_connection() bind(c, name='setupConnection')
        USE iso_c_binding
      END FUNCTION setup_connection
@@ -47,34 +41,6 @@ MODULE redis_mod
 
 CONTAINS
 
-  SUBROUTINE array_to_redis(f)
-    ! Arguments
-    INTEGER(c_int) :: f(:,:)
-    ! Local Variables
-    INTEGER(c_int) :: dims(2), ndims
-    INTEGER        :: i
-
-    ndims = 2
-    DO i=1,ndims
-       dims(i) = SIZE(f,i)
-    END DO
-
-    CALL iarray_to_redis(f, dims, ndims)
-
-  END SUBROUTINE array_to_redis
-
-  SUBROUTINE stream_data(f)
-    INTEGER(c_int) :: f(:,:)
-    INTEGER(c_int) :: n, m
-    EXTERNAL publish_to_redis
-    ! TODO this is a function stub
-    n = SIZE(f, 1)
-    m = SIZE(f, 2)
-
-    CALL publish_to_redis(f, n, m)
-
-  END SUBROUTINE stream_data
-
 
   SUBROUTINE redis_push_f4_1d(c, key, arr)
     ! Push data to redis server (single precision)
@@ -99,7 +65,7 @@ CONTAINS
     dtype = endian()//"f4"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f4_1d
 
 
@@ -126,7 +92,7 @@ CONTAINS
     dtype = endian()//"f4"
 
     ! Publish via explicit form!
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f4_2d
 
 
@@ -153,7 +119,7 @@ CONTAINS
     dtype = endian()//"f4"
 
     ! Publish via explicit form!
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f4_3d
 
   SUBROUTINE redis_push_f8_1d(c, key, arr)
@@ -179,7 +145,7 @@ CONTAINS
     dtype = endian()//"f8"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f8_1d
 
 
@@ -206,7 +172,7 @@ CONTAINS
     dtype = endian()//"f8"
 
     ! Publish via explicit form!
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f8_2d
 
 
@@ -233,7 +199,7 @@ CONTAINS
     dtype = endian()//"f8"
 
     ! Publish via explicit form!
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_f8_3d
 
 
@@ -260,7 +226,7 @@ CONTAINS
     dtype = endian()//"i2"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i2_1d
 
 
@@ -287,7 +253,7 @@ CONTAINS
     dtype = endian()//"i2"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i2_2d
 
 
@@ -314,7 +280,7 @@ CONTAINS
     dtype = endian()//"i2"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i2_3d
 
 
@@ -341,7 +307,7 @@ CONTAINS
     dtype = endian()//"i4"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i4_1d
 
 
@@ -368,7 +334,7 @@ CONTAINS
     dtype = endian()//"i4"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i4_2d
 
 
@@ -395,11 +361,11 @@ CONTAINS
     dtype = endian()//"i4"
 
     ! Publish via explicit form
-    CALL redis_push_explict(c, key, arr, dtype, SHAPE(arr))
+    CALL redis_push_explicit(c, key, arr, dtype, SHAPE(arr))
   END SUBROUTINE redis_push_i4_3d
 
 
-  SUBROUTINE redis_push_explict(c, key, arr, dtype, dims)
+  SUBROUTINE redis_push_explicit(c, key, arr, dtype, dims)
     ! Push data to redis server, interfacing with C library
     !
     ! Inputs
@@ -430,7 +396,7 @@ CONTAINS
 
     ! call C interface
     CALL c_redis_push(c, key_c, c_loc(arr), dtype_c, dims, SIZE(dims,1))
-  END SUBROUTINE redis_push_explict
+END SUBROUTINE redis_push_explicit
 
 
   FUNCTION endian() RESULT(e)
