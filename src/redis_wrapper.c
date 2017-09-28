@@ -123,7 +123,7 @@ void Redis_push(redisContext *c,
     // dtype is in form <i4, <f8, <f4, etc
 
     // get length of the array
-    char        digit[2] = "";
+    char        digit[3] = "";
     digit[0] = dtype[1];
     int         bytesize = (size_t)atoi(digit);
     size_t      len = prod(bytesize, dims, ndims);
