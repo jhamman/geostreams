@@ -32,10 +32,10 @@ PROGRAM name
   CALL redis_push(redis, 'A-i4', i4)
 
   ! Lower level API
-  CALL redis_push_explict(redis, 'A-f4-explicit', f4, '<f4', shape(f4))
-  CALL redis_push_explict(redis, 'A-f8-explicit', f8, '<f4', shape(f8))
-  CALL redis_push_explict(redis, 'A-i2-explicit', i2, '<f4', shape(i2))
-  CALL redis_push_explict(redis, 'A-i4-explicit', i4, '<f4', shape(i4))
+  CALL redis_push_explicit(redis, 'A-f4-explicit', f4, '<f4', shape(f4))
+  CALL redis_push_explicit(redis, 'A-f8-explicit', f8, '<f4', shape(f8))
+  CALL redis_push_explicit(redis, 'A-i2-explicit', i2, '<f4', shape(i2))
+  CALL redis_push_explicit(redis, 'A-i4-explicit', i4, '<f4', shape(i4))
 
   CALL free_connection(redis)
 END PROGRAM name
